@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<package>
+<infos>
+<name>Rights UI Simplifier</name>
+<description>A more user friendly application for managing rights to groups.</description>
+<licence></licence>
+<author>XWiki.Admin</author>
+<extensionId>org.xwiki.commons:application-rights-manager</extensionId>
+<version>1.0-SNAPSHOT</version>
+<backupPack>false</backupPack>
+</infos>
+<files>
+<file language="" defaultAction="0">XWiki.AdminRightsTranslations</file>
+<file language="" defaultAction="0">XWiki.AdminRightsSheet</file>
+<file language="" defaultAction="0">XWiki.SaveRightsBasic</file>
+</files>
+</package>

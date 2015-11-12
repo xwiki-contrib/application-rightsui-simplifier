@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+<web>XWiki</web>
+<name>AdminRightsSheet</name>
+<language></language>
+<defaultLanguage></defaultLanguage>
+<translation>0</translation>
+<parent>XWiki.AdminSheet</parent>
+<creator>xwiki:XWiki.Admin</creator>
+<author>xwiki:XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+<creationDate>1211801338000</creationDate>
+<date>1447320843000</date>
+<contentUpdateDate>1447320481000</contentUpdateDate>
+<version>1.1</version>
+<title></title>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.0</syntaxId>
+<hidden>true</hidden>
+<object>
+<class>
+<name>XWiki.JavaScriptExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>XWiki.AdminRightsSheet</name>
+<number>1</number>
+<className>XWiki.JavaScriptExtension</className>
+<guid>9786d9d2-fa55-4a39-9df2-587866e4049b</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+/* this represent a triple state checkbox */
+MSSelect = Class.create({
+  /**
+    * @todo Make confirmations generic.
+    * @todo L10N
+    * @todo Send the state number, or a generic map {state =&gt; sendValue}
+    * @todo Configuration: automatic save, or just change the value.
+    * @todo "Busy" icon when saving.
+    * @todo Changing the value should change the cache, not invalidate it.
+    * @todo The new state should be taken from the response, not just increment it.
+    * @todo Make this a valid ARIA checkbox: http://www.w3.org/TR/aria-role/#checkbox
+    */
+  initialize: function(domNode, selected, saveUrl, table, idx)
+  {
+    this.table = table;
+    this.idx = idx;
+
+    if (this.table &amp;&amp; this.idx &amp;&amp; this.table.fetchedRows[this.idx]) {
+      var initialAllows = this.table.fetchedRows[this.idx].allows.replace(/\[|\]/g,'').split(', ');
+      this.initialEdit = initialAllows.indexOf('edit') &gt;= 0;
+      this.initialAdmin = initialAllows.indexOf('admin') &gt;= 0;
+      this.currentUorG = this.table.fetchedRows[this.idx].fullname;
+      this.isUserInGroup = this.table.fetchedRows[this.idx].isuseringroup;
+    } else {
+      // guest users
+      this.currentUorG = window.unregUser;
+      this.isUserInGroup = false;
+      this.initialEdit = false;
+      this.initialAdmin = false;
+    }
+    this.domNode = $(domNode);
+    this.saveUrl = saveUrl;
+    this.advOption = null;
+
+    if(selected &lt; 0){
+      this.advOption = document.createElement('option');
+      this.advOption.appendChild(document.createTextNode("$escapetool.javascript($services.localization.render('rightsmanager.levels.level_adv'))"));
+      this.advOption.setAttribute('selected','selected');
+      this.domNode.appendChild(this.advOption);
+      this.selectIdx = this.domNode.selectedIndex;
+    } else {
+      this.selectIdx = selected;
+    }
+    
+    this.attachEvents();
+  },
+
+  /* Confirmation cases:
+   * 1. The current user is clearing / denying himself any right.
+   * 2. The current user is clearing / denying any rights for a group he belongs to.
+   * 3. The current user is is clearing / denying admin right for any user / group.
+   * User can clear it's own right after canceling the deny action and confirming the clear action.
+   */
+  onChange: function()
+  {
+      this.domNode.disable();
+      // 1. The current user is clearing / denying himself any right.
+      var thisSelect = this.domNode;
+      var thisOption = thisSelect.selectedIndex &gt;= 0 ? thisSelect.options[thisSelect.selectedIndex].value.toLowerCase() : undefined;
+
+      var nextRights = thisOption.split(',');
+
+      var dropEdit = (this.initialEdit &amp;&amp; nextRights.indexOf('edit') &lt; 0);
+      var dropAdmin = (this.initialAdmin &amp;&amp; nextRights.indexOf('admin') &lt; 0);
+      var right = dropAdmin ? '$escapetool.javascript($services.localization.render('rightsmanager.admin'))' : '$escapetool.javascript($services.localization.render('rightsmanager.edit'))';
+
+      if (dropEdit || dropAdmin) {
+        // 1. The current user is clearing himself the edit/admin right.
+        if (this.currentUorG == window.currentUser) {
+          var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforcurrentuser'))".replace(/__right__/g, right);
+          if (!confirm(clearmessage)) {
+            return;
+          }
+        } else {
+        // 2. The current user is clearing the edit/admin right for a group he belongs to.
+          var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforgroup'))".replace(/__right__/g, right);
+          clearmessage = clearmessage.replace('__name__', this.currentUorG);
+          if (!confirm(clearmessage)) {
+            return;
+          }
+        }
+        if (dropAdmin) {
+          this.initialAdmin = false;
+          if (dropEdit) {
+            this.initialEdit = false;
+          }
+        } else {
+          this.initialEdit = false;
+        }
+      }
+
+
+      // Compose the complete URI
+      var url = this.saveUrl + "&amp;levels=" + encodeURIComponent(thisOption).replace('|','%7C');
+
+      this.req = new Ajax.Request(url, {
+        method: 'get',
+        onSuccess: function(transport) {
+          if (transport.responseText.strip() == "SUCCESS") {
+            // Succeeded, remove advanced if needed
+            this.selectIdx = this.domNode.selectedIndex;
+            if (this.advOption) {
+              this.domNode.removeChild(this.advOption);
+              this.advOption = null;
+            }
+          } else {
+            //if an error occurred while trying to save a right rule, display an alert
+            // and refresh the page, since probably the user does not have the right to perform
+            // that action
+            alert("$services.localization.render('platform.core.rightsManagement.saveFailure')");
+            var rURL = unescape(window.location.pathname);
+            window.location.href = rURL;
+          }
+        }.bind(this),
+        onFailure: function() {
+          alert("$services.localization.render('platform.core.rightsManagement.ajaxFailure')");
+          this.domNode.value = this.domNode.options[this.selectIdx].value;
+        }.bind(this),
+        onComplete: function() {
+          delete this.req;
+          this.domNode.enable();
+        }.bind(this)
+      });
+  },
+
+  attachEvents: function()
+  {
+    this.domNode.observe('change', this.onChange.bind(this));
+  }
+});
+
+
+/**
+  * User and groups list element creator.
+  * Used in adminglobalrights.vm, adminspacerights.vm, editrights.vm.
+  * @todo allows and denys should be arrays, not strings.
+  */
+function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocument)
+{
+  var userurl = row.userurl;
+  var uorg = table.json.uorg;
+  var allows = row.allows;
+  var denys = row.denys;
+
+  // targetDocument is an optional parameter, which set on which document we save the rights
+  if (targetDocument === undefined) {
+    // by default, we set it to the current document
+    targetDocument = XWiki.currentDocument;
+  }
+  
+  var saveUrl = targetDocument.getURL('get', 'sheet=XWiki.SaveRightsBasic&amp;outputSyntax=plain&amp;clsname=' + table.json.clsname + '&amp;fullname=' + encodeURIComponent(row.fullname) + '&amp;uorg=' + uorg);
+  if (form_token != undefined) {
+      saveUrl += "&amp;form_token=" + form_token;
+  }
+
+  var tr = document.createElement('tr');
+
+  var sel = document.createElement('select')
+  sel.size = 1;
+  sel.className = 'selectRights';
+  var username = document.createElement('td');
+  // Set a data-title attribute for the responsive livetable (since Flamingo).
+  if (uorg == 'groups') {
+    username.setAttribute('data-title', "$escapetool.javascript($services.localization.render('rightsmanager.groupname'))");
+  } else {
+    username.setAttribute('data-title', "$escapetool.javascript($services.localization.render('rightsmanager.username'))");
+  }
+  if (row.wikiname == "local") {
+    var a = document.createElement('a');
+    a.href = userurl;
+    a.appendChild( document.createTextNode( row.username ) );
+    username.appendChild( a );
+  } else {
+    username.appendChild(document.createTextNode(row.username));
+  }
+
+  var translatedRights = {
+    ''                             : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_0'))",
+    'view'                         : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_1'))",
+    'view,comment'                 : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_2'))",
+    'view,comment,edit'            : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_3'))",
+    'view,comment,edit,delete'     : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_4'))"
+  };
+  var match = -1;
+  username.className = "username";
+  tr.appendChild(username);
+  Object.keys(translatedRights).each(function(right, index) {
+    var option = document.createElement('option');
+    option.className = "rights";
+    option.value = right.toLowerCase();
+    option.appendChild(document.createTextNode(translatedRights[right]));
+    sel.appendChild(option);
+    var sortedRight = right.split(',').sort().join(',');
+    var sortedAllows = allows.replace(/\[|\]/g,'').split(', ').sort().join(',');
+    if ((sortedAllows == sortedRight) &amp;&amp; denys.length == 2){
+      option.setAttribute('selected','selected')
+      match = index;
+    }
+  });
+
+  var actions = document.createElement('td');
+  actions.appendChild(sel);
+  tr.appendChild(actions);
+
+  new MSSelect(sel, match, saveUrl, table, i);
+
+  return tr;
+}
+
+////////////////////////////////////////////////////////////////
+
+function makeAddHandler(url, saveurl, redirecturl)
+{
+  return function() {
+    window.lb = new Lightbox(url, saveurl, redirecturl);
+  }
+}
+</code></property><property><name></name></property><property><parse>1</parse>
+</property>
+<property>
+<use>onDemand</use>
+</property>
+</object>
+<content>{{velocity}}
+#set($discard = $xwiki.jsx.use("XWiki.AdminRightsSheet"))
+#set($xwikiVersion = $xwiki.version.substring(0,3))
+#if($mathtool.toNumber($xwikiVersion) &gt; 7.2)
+  #if ($editor == 'spaceadmin')
+    {{info}}
+    #set($webHomeRef = $services.model.resolveDocument('WebHome'))
+    ## For the children link, we do not use 'viewer=children' because the WebHome might not exist and the viewer shows a 
+    ## 404 error in that case. Instead, we use 'xpage=children' because it always works, and because children document
+    ## could exist even if the parent document does not.
+    $services.localization.render('admin.rights.info', ['**', '[[', "&gt;&gt;path:$xwiki.getURL($webHomeRef, 'view', 'xpage=children')]]", '**'])
+    {{/info}}
+  #end
+#end
+
+{{html}}
+#if ($request.mode != "advanced")
+&lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;Go to advanced&lt;/a&gt;
+&lt;div id='simpleUI'&gt;
+  #set ($formname = 'update')
+  #set ($saveaction = 'save')
+  ########################
+  ## display the interface
+  ########################
+  ## inject the needed JS &amp; CSS files
+  $xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)
+  $xwiki.jsfx.use('js/xwiki/table/livetable.js', true)
+  $xwiki.ssfx.use('js/xwiki/table/livetable.css', true)
+  
+  #if($doc.fullName == 'XWiki.XWikiPreferences')
+    #if (("$!{request.editor}" == 'globaladmin') || "$!{editor}" == 'globaladmin')
+      #set ($clsname = 'XWiki.XWikiGlobalRights')
+    #else
+      #set($clsname = 'XWiki.XWikiRights')
+    #end
+  #elseif ($doc.name == 'WebPreferences')
+    #if ("$!{request.editor}" == 'spaceadmin' || "$!{editor}" == 'spaceadmin')
+      #set ($clsname = 'XWiki.XWikiGlobalRights')
+    #else
+      #set ($clsname = 'XWiki.XWikiRights')
+    #end
+  #else
+    #set ($clsname = 'XWiki.XWikiRights')
+  #end
+
+  ## url to take the users and groups to display in the ajax-based table
+  #set ($url = $doc.getURL('get', 'xpage=getusersandgroups'))
+  #set ($saveUrl = $doc.getURL('get', "form_token=$!{services.csrf.getToken()}&amp;sheet=XWiki.SaveRightsBasic&amp;outputSyntax=plain&amp;clsname=${clsname}&amp;fullname=XWiki.XWikiGuest&amp;uorg=users"))
+
+  ## get the rights for XWikiGuest
+  #set ($guest = 'XWiki.XWikiGuest')
+  #set ($guestOption = '')
+  #foreach ($obj in $doc.getObjects($clsname)) ## XWiki.XWikiGlobalRights or XWiki.XWikiRights
+    #set ($pers = "$!obj.getProperty('users').getValue()")
+    #if ($pers.matches("^(.*,)?${regextool.quote($guest)}(,.*)?$"))
+      #if ($obj.getProperty('allow').getValue() == 1)
+        #if ($guestOption != '')
+          #set ($guestOption = 'advanced')
+        #else
+          #set ($specifiedRights = $!obj.getProperty('levels').getValue().split(','))
+## TODO: Define $guestOption base on a match against the $specifiedRights array or set it advanced
+        #end
+      #else
+        #set ($guestOption = 'advanced')
+      #end
+    #end
+  #end
+  &lt;div id="xwikieditcontent"&gt;
+    #if ("$!editor" == 'rights')
+      ## Display a title if we're editing access rights for a particular page
+      &lt;div id="document-title"&gt;&lt;h1&gt;$msg.get('core.editors.rights.title', [$escapetool.xml($doc.plainTitle), $doc.getURL()])&lt;/h1&gt;&lt;/div&gt;
+    #end
+    &lt;table id="usersandgroupstable" class="xwiki-livetable#if("$!editor" != '') $editor#end"&gt;
+      &lt;tr&gt;
+        &lt;td class="xwiki-livetable-pagination" colspan="2"&gt;
+          &lt;span id="usersandgroupstable-limits" class="xwiki-livetable-limits"&gt;&lt;/span&gt;
+          &lt;span id="usersandgroupstable-ajax-loader" class="xwiki-livetable-loader"&gt;&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')" alt="$msg.get('platform.livetable.loading')" title="" /&gt;$msg.get('platform.livetable.loading')&lt;/span&gt;
+          &lt;span class="pagination"&gt;
+            &lt;span id="usersandgroupstable-pagination-text" class="xwiki-livetable-pagination-text"&gt;$msg.get('platform.livetable.paginationPage')&lt;/span&gt;
+            &lt;span id="usersandgroupstable-pagination" class="xwiki-livetable-pagination-content" &gt;&lt;/span&gt;
+          &lt;/span&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td class="xwiki-livetable-display-container"&gt;
+          &lt;table class="xwiki-livetable-display"&gt;
+            &lt;thead class="xwiki-livetable-display-header"&gt;
+              &lt;tr class="userorgroups-header"&gt;
+                ## Groups/Users switch
+                &lt;th scope="col" class="usersorgroupsnames"&gt;
+                  #set ($isWorkspace = $services.workspace.isWorkspace($xcontext.database))
+                  &lt;label for="uorgg" class="hidden"&gt;$msg.get('rightsmanager.groups')&lt;/label&gt;
+              &lt;input type="radio" id="uorgg" name="uorg" value="groups"
+                onclick="if(!$('unregistered').hasClassName('hidden'))
+                           $('unregistered').addClassName('hidden');
+                       #if ($isWorkspace)
+                         ## Unhide scope selection and automatically select the old index.
+                         if($('usersandgroupstable-filters-scope').hasClassName('hidden')) {
+                           $('usersandgroupstable-filters-scope').removeClassName('hidden');
+                           $('wiki').options[groupScopeIndex].selected=true;
+                         }
+                       #end" checked="checked" /&gt;$services.localization.render('rightsmanager.groups')&amp;nbsp;&amp;nbsp;
+              &lt;label for="uorgu" class="hidden"&gt;$services.localization.render('rightsmanager.users')&lt;/label&gt;
+              &lt;input type="radio" id="uorgu" name="uorg" value="users" 
+                onclick="if($('unregistered').hasClassName('hidden'))
+                           $('unregistered').removeClassName('hidden');
+                       #if ($isWorkspace)
+                         ## Hide scope selection and automatically select global scope.
+                         if(!$('usersandgroupstable-filters-scope').hasClassName('hidden')) {
+                           $('usersandgroupstable-filters-scope').addClassName('hidden');
+                           groupScopeIndex = $('wiki').selectedIndex;
+                           $('wiki').options[1].selected=true;
+                         }
+                       #end" /&gt;$services.localization.render('rightsmanager.users')
+                  &lt;/th&gt;
+                ## Column headers for each configurable access right
+                  &lt;th scope="col" class="rights"&gt;$services.localization.render('rightsmanager.rightsTab')&lt;/th&gt;
+              &lt;/tr&gt;
+              &lt;tr hidden id="unregistered"&gt;
+                ## Rights for guests, statically displayed outside the livetable
+                &lt;td id="unreguser"&gt;$msg.get('rightsmanager.unregisteredusers')&lt;/td&gt;
+                &lt;td class="rights" id="guestselect"&gt;TODO&lt;/td&gt;
+              &lt;/tr&gt;
+              &lt;tr id="usersandgroupstable-filters"&gt;
+                ## Users/groups filter
+                &lt;td&gt;&lt;label for="name"&gt;$msg.get('rightsmanager.searchfilter')&lt;/label&gt;&lt;input id="name" name="name" type="text"/&gt;
+                  #if(!$xcontext.isMainWiki()) #set($mainwk = false) #else #set($mainwk = true) #end
+                  #if(!$mainwk) ## display the combobox only in a local wiki
+                    &lt;div id="usersandgroupstable-filters-scope"&gt;
+                      &lt;label for="wiki"&gt;$msg.get('rightsmanager.searchscope')&lt;/label&gt;
+                      &lt;select id="wiki" name="wiki" style="margin-left:10px;"&gt;
+                        &lt;option value="local" selected="selected"&gt;$msg.get('rightsmanager.local')&lt;/option&gt;
+                        &lt;option value="global"&gt;$msg.get('rightsmanager.global')&lt;/option&gt;
+                        &lt;option value="both"&gt;$msg.get('rightsmanager.both')&lt;/option&gt;
+                      &lt;/select&gt;
+                    &lt;/div&gt;
+                  #else
+                    &lt;input type="hidden" name="wiki" value="local"/&gt;
+                  #end
+                  #set ($colsp = $maxlevel + 1)
+                &lt;/td&gt;
+                &lt;td colspan="$colsp"&gt;&lt;input type="hidden" name="clsname" value="$clsname" /&gt;&lt;/td&gt;
+              &lt;/tr&gt;
+            &lt;/thead&gt;
+            ## Livetable placeholder, will be filled in from Javascript
+            &lt;tbody id="usersandgroupstable-display" class="xwiki-livetable-display-body"&gt;&lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;
+          &lt;/table&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/table&gt;
+
+      &lt;script type="text/javascript"&gt;
+      //&lt;![CDATA[
+  (function() {
+    function hideScopeForUsers() {
+      if ($('uorgu').checked) {
+        // Hide scope filter.
+        $('usersandgroupstable-filters-scope').addClassName('hidden');
+        // Default to global.
+        $('wiki').options[1].selected=true;
+        
+        return true;
+      } 
+      
+      return false;
+    }
+    
+    function startup() {
+      if (XWiki &amp;&amp; XWiki.widgets &amp;&amp; XWiki.widgets.LiveTable) {
+      
+      #if ($isWorkspace)
+        window.groupScopeIndex = 0;
+        hideScopeForUsers() || Event.observe(window, 'load', hideScopeForUsers);
+      #end
+
+        window.saveUrl = "$saveUrl";
+        window.saveUrl.replace(/&amp;amp;/g, "&amp;");
+        window.currentUser = "$!{escapetool.javascript($xcontext.user)}";
+        window.unregUser = "XWiki.XWikiGuest";
+        // the callback function is called from LiveTable with 3 arguments
+        var callback = function(row, i, table, idx) { return displayUsersAndGroupsBasic(row, i, table, idx, "$!{services.csrf.getToken()}") };
+        var ta = new XWiki.widgets.LiveTable("$url", "usersandgroupstable", callback, {"filtersNode": $('usersandgroupstable')});
+        var guestSelect = new MSSelect($("guestselect"), window.saveUrl);
+        Event.observe(window, 'load', function() {
+          if($('uorgg').checked &amp;&amp; !$('unregistered').hasClassName('hidden')) {
+            $('unregistered').addClassName('hidden');
+          } else if($('uorgu').checked &amp;&amp; $('unregistered').hasClassName('hidden')) {
+            $('unregistered').removeClassName('hidden');
+          }
+        });
+        
+      #if("$!editor" == 'globaladmin')
+        Event.observe($('authenticate_view'), 'click', setBooleanPropertyFromLiveCheckbox($('authenticate_view'), '$xwiki.getURL('XWiki.XWikiPreferences', 'save', "form_token=$!{services.csrf.getToken()}")', 'XWiki.XWikiPreferences', 0));
+        Event.observe($('authenticate_edit'), 'click', setBooleanPropertyFromLiveCheckbox($('authenticate_edit'), '$xwiki.getURL('XWiki.XWikiPreferences', 'save', "form_token=$!{services.csrf.getToken()}")', 'XWiki.XWikiPreferences', 0));
+      #end
+      #if($guest_comment_captcha_prop)
+        Event.observe($('guest_comment_requires_captcha'), 'click', setBooleanPropertyFromLiveCheckbox($('guest_comment_requires_captcha'), '$doc.getURL('save', "form_token=$!{services.csrf.getToken()}")', 'XWiki.XWikiPreferences', 0));
+      #end
+        return true;
+      }
+      return false;
+    }
+    // Initialize liveTable
+    (XWiki &amp;&amp; XWiki.isInitialized &amp;&amp; startup()) || document.observe('xwiki:livetable:loading', startup);
+  })();
+      //]]&gt;
+      &lt;/script&gt;
+  &lt;/div&gt; ## xwikieditcontent
+&lt;/div&gt;
+#else
+  &lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;Go to basic&lt;/a&gt; 
+  &lt;div id='advancedUI'&gt;
+    #template('rightsUI.vm')
+  &lt;/div&gt;
+#end
+&lt;script type="text/javascript"&gt;
+        //&lt;![CDATA[
+    (function() {
+        function startup() {
+          $("buttontoggle").observe('click', function() {
+            var rURL = window.location.href;
+            if (rURL.indexOf('?mode=advanced') != -1) {
+                window.location.href = rURL.replace(/mode=advanced&amp;?/,'');
+            }
+            if ($("simpleUI")) {
+              if(rURL.indexOf('?') != -1){
+                window.location.href = rURL.replace('?', '?mode=advanced&amp;');
+              } else if (rURL.indexOf('#') != -1) {
+                window.location.href = rURL.replace('#', '?mode=advanced#');
+              } else if (rURL.indexOf('#') != -1) {
+                window.location.href = rURL + '?mode=advanced';
+              }
+            } else {
+                window.location.replace(rURL);
+            }
+          });
+        }
+        (XWiki &amp;&amp; XWiki.isInitialized &amp;&amp; startup()) || document.observe('xwiki:livetable:loading', startup);
+    })();
+        //]]&gt;
+        &lt;/script&gt;
+{{/html}}
+
+{{/velocity}}</content></xwikidoc>
