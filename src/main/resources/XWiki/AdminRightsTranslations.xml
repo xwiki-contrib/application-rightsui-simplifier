@@ -21,63 +21,63 @@
 -->
 
 <xwikidoc>
-<web>XWiki</web>
-<name>AdminRightsTranslations</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent>XWiki.WebHome</parent>
-<creator>xwiki:XWiki.Admin</creator>
-<author>xwiki:XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-<creationDate>1447319748000</creationDate>
-<date>1447319748000</date>
-<contentUpdateDate>1447319748000</contentUpdateDate>
-<version>1.1</version>
-<title></title>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.1</syntaxId>
-<hidden>true</hidden>
-<object>
-<class>
-<name>XWiki.TranslationDocumentClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<scope>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>scope</name>
-<number>1</number>
-<prettyName>Scope</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<unmodifiable>0</unmodifiable>
-<values>GLOBAL|WIKI|USER|ON_DEMAND</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</scope>
-</class>
-<name>XWiki.AdminRightsTranslations</name>
-<number>0</number>
-<className>XWiki.TranslationDocumentClass</className>
-<guid>3834428e-b2c3-4739-82fd-3132525f275e</guid>
-<property>
-<scope>WIKI</scope>
-</property>
-</object>
-<content>rightsmanager.rightsTab=Rights
+  <web>XWiki</web>
+  <name>AdminRightsTranslations</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>XWiki.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1447319748000</creationDate>
+  <date>1447319748000</date>
+  <contentUpdateDate>1447319748000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <object>
+    <class>
+      <name>XWiki.TranslationDocumentClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>1</number>
+        <prettyName>Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>GLOBAL|WIKI|USER|ON_DEMAND</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <name>XWiki.AdminRightsTranslations</name>
+    <number>0</number>
+    <className>XWiki.TranslationDocumentClass</className>
+    <guid>3834428e-b2c3-4739-82fd-3132525f275e</guid>
+    <property>
+      <scope>WIKI</scope>
+    </property>
+  </object>
+  <content>rightsmanager.rightsTab=Rights
 rightsmanager.groups=All Groups
 rightsmanager.users=Users
 rightsmanager.levels.level_0=
@@ -85,4 +85,5 @@ rightsmanager.levels.level_1=View
 rightsmanager.levels.level_2=View, Comment
 rightsmanager.levels.level_3=View, Comment, Edit
 rightsmanager.levels.level_4=View, Comment, Edit, Delete
-rightsmanager.levels.level_adv=Advanced</content></xwikidoc>
+rightsmanager.levels.level_adv=Advanced</content>
+</xwikidoc>
