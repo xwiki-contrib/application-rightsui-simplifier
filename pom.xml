@@ -28,7 +28,8 @@
     <artifactId>xwiki-commons-pom</artifactId>
     <version>5.4</version>
   </parent>
-  <artifactId>application-rights-manager</artifactId>
+  <groupId>org.xwiki.contrib</groupId>
+  <artifactId>application-rightsui-simplifier</artifactId>
   <name>Rights UI Simplifier</name>
   <version>1.0-SNAPSHOT</version>
   <packaging>xar</packaging>
