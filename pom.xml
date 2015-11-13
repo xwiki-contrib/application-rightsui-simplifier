@@ -31,14 +31,14 @@
   <groupId>org.xwiki.contrib</groupId>
   <artifactId>application-rightsui-simplifier</artifactId>
   <name>Rights UI Simplifier</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>xar</packaging>
   <description>A more user friendly application for managing rights to groups.</description>
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/application-rightsui-simplifier.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/application-rightsui-simplifier.git</developerConnection>
     <url>https://github.com/xwiki-contrib/application-rightsui-simplifier.git</url>
-    <tag>HEAD</tag>
+    <tag>application-rightsui-simplifier-1.0</tag>
   </scm>
   <issueManagement>
     <system>jira</system>
