@@ -177,7 +177,7 @@ MSSelect = Class.create({
 
     if(selected &lt; 0){
       this.advOption = document.createElement('option');
-      this.advOption.appendChild(document.createTextNode("$escapetool.javascript($services.localization.render('rightsmanager.levels.level_adv'))"));
+      this.advOption.appendChild(document.createTextNode("$escapetool.javascript($services.localization.render('rightuisimplifier.levels.level_adv'))"));
       this.advOption.setAttribute('selected','selected');
       this.domNode.appendChild(this.advOption);
       this.selectIdx = this.domNode.selectedIndex;
@@ -318,12 +318,16 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   }
 
   var translatedRights = {
-    ''                             : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_0'))",
-    'view'                         : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_1'))",
-    'view,comment'                 : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_2'))",
-    'view,comment,edit'            : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_3'))",
-    'view,comment,edit,delete'     : "$escapetool.javascript($services.localization.render('rightsmanager.levels.level_4'))"
+    '' : '$escapetool.javascript($services.localization.render('rightuisimplifier.levels.label_noright'))'
+#foreach($i in [1..20])
+  #set($key = $services.localization.render("rightuisimplifier.levels.level_$i"))
+  #if ($key == "rightuisimplifier.levels.level_$i")
+    #break
+  #end
+    ,'$escapetool.javascript($key)' : '$escapetool.javascript($services.localization.render("rightuisimplifier.levels.label_$i"))'
+#end
   };
+
   var match = -1;
   username.className = "username";
   tr.appendChild(username);
@@ -378,7 +382,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
 
 {{html}}
 #if ($request.mode != "advanced")
-&lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;Go to advanced&lt;/a&gt;
+&lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;$services.localization.render('rightuisimplifier.goto.advanced')&lt;/a&gt;
 &lt;div id='simpleUI'&gt;
   #set ($formname = 'update')
   #set ($saveaction = 'save')
@@ -571,7 +575,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   &lt;/div&gt; ## xwikieditcontent
 &lt;/div&gt;
 #else
-  &lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;Go to basic&lt;/a&gt; 
+  &lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;$services.localization.render('rightuisimplifier.goto.basic')&lt;/a&gt;
   &lt;div id='advancedUI'&gt;
     #template('rightsUI.vm')
   &lt;/div&gt;
