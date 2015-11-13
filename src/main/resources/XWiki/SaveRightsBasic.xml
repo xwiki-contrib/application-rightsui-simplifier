@@ -122,10 +122,11 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>if($("tmEditRights")){
-  var setPageRightsLink = $("tmEditRights").href.replace('editor=rights', 'sheet=XWiki.AdminRightsSheet');
-  $('tmEditRights').setAttribute('href', setPageRightsLink);
-}</code>
+      <code>(function(rightMenuItem) {
+  if(rightMenuItem){
+    rightMenuItem.setAttribute('href', rightMenuItem.href.replace('editor=rights', 'sheet=XWiki.AdminRightsSheet'));
+  }
+})($('tmEditRights'))</code>
     </property>
     <property>
       <name/>

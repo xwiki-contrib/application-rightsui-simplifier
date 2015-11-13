@@ -349,15 +349,6 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
 
   return tr;
 }
-
-////////////////////////////////////////////////////////////////
-
-function makeAddHandler(url, saveurl, redirecturl)
-{
-  return function() {
-    window.lb = new Lightbox(url, saveurl, redirecturl);
-  }
-}
 </code>
     </property>
     <property>
