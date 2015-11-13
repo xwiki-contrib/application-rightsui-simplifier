@@ -35,9 +35,9 @@
   <packaging>xar</packaging>
   <description>A more user friendly application for managing rights to groups.</description>
   <scm>
-    <connection>scm:git:git://github.com/xwiki-contrib/application-rights-manager.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki-contrib/application-rights-manager.git</developerConnection>
-    <url>https://github.com/xwiki-contrib/application-rights-manager.git</url>
+    <connection>scm:git:git://github.com/xwiki-contrib/application-rightsui-simplifier.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki-contrib/application-rightsui-simplifier.git</developerConnection>
+    <url>https://github.com/xwiki-contrib/application-rightsui-simplifier.git</url>
     <tag>HEAD</tag>
   </scm>
   <issueManagement>
