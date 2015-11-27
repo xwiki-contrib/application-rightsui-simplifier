@@ -31,8 +31,8 @@
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <creationDate>1211801338000</creationDate>
-  <date>1447679552000</date>
-  <contentUpdateDate>1447679552000</contentUpdateDate>
+  <date>1448632339000</date>
+  <contentUpdateDate>1448632339000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -61,7 +61,7 @@
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -106,10 +106,10 @@
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
@@ -195,74 +195,74 @@ MSSelect = Class.create({
    */
   onChange: function()
   {
-      this.domNode.disable();
-      // 1. The current user is clearing / denying himself any right.
-      var thisSelect = this.domNode;
-      var thisOption = thisSelect.selectedIndex &gt;= 0 ? thisSelect.options[thisSelect.selectedIndex].value.toLowerCase() : undefined;
+    this.domNode.disable();
+    // 1. The current user is clearing / denying himself any right.
+    var thisSelect = this.domNode;
+    var thisOption = thisSelect.selectedIndex &gt;= 0 ? thisSelect.options[thisSelect.selectedIndex].value.toLowerCase() : undefined;
 
-      var nextRights = thisOption.split(',');
+    var nextRights = thisOption.split(',');
 
-      var dropEdit = (this.initialEdit &amp;&amp; nextRights.indexOf('edit') &lt; 0);
-      var dropAdmin = (this.initialAdmin &amp;&amp; nextRights.indexOf('admin') &lt; 0);
-      var right = dropAdmin ? '$escapetool.javascript($services.localization.render('rightsmanager.admin'))' : '$escapetool.javascript($services.localization.render('rightsmanager.edit'))';
+    var dropEdit = (this.initialEdit &amp;&amp; nextRights.indexOf('edit') &lt; 0);
+    var dropAdmin = (this.initialAdmin &amp;&amp; nextRights.indexOf('admin') &lt; 0);
+    var right = dropAdmin ? '$escapetool.javascript($services.localization.render('rightsmanager.admin'))' : '$escapetool.javascript($services.localization.render('rightsmanager.edit'))';
 
-      if (dropEdit || dropAdmin) {
-        // 1. The current user is clearing himself the edit/admin right.
-        if (this.currentUorG == window.currentUser) {
-          var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforcurrentuser'))".replace(/__right__/g, right);
-          if (!confirm(clearmessage)) {
-            return;
-          }
-        } else {
-        // 2. The current user is clearing the edit/admin right for a group he belongs to.
-          var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforgroup'))".replace(/__right__/g, right);
-          clearmessage = clearmessage.replace('__name__', this.currentUorG);
-          if (!confirm(clearmessage)) {
-            return;
-          }
+    if (dropEdit || dropAdmin) {
+      // 1. The current user is clearing himself the edit/admin right.
+      if (this.currentUorG == window.currentUser) {
+        var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforcurrentuser'))".replace(/__right__/g, right);
+        if (!confirm(clearmessage)) {
+          return;
         }
-        if (dropAdmin) {
-          this.initialAdmin = false;
-          if (dropEdit) {
-            this.initialEdit = false;
-          }
-        } else {
-          this.initialEdit = false;
+      } else {
+      // 2. The current user is clearing the edit/admin right for a group he belongs to.
+        var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforgroup'))".replace(/__right__/g, right);
+        clearmessage = clearmessage.replace('__name__', this.currentUorG);
+        if (!confirm(clearmessage)) {
+          return;
         }
       }
+      if (dropAdmin) {
+        this.initialAdmin = false;
+        if (dropEdit) {
+          this.initialEdit = false;
+        }
+      } else {
+        this.initialEdit = false;
+      }
+    }
 
 
-      // Compose the complete URI
-      var url = this.saveUrl + "&amp;levels=" + encodeURIComponent(thisOption).replace('|','%7C');
+    // Compose the complete URI
+    var url = this.saveUrl + "&amp;levels=" + encodeURIComponent(thisOption).replace('|','%7C');
 
-      this.req = new Ajax.Request(url, {
-        method: 'get',
-        onSuccess: function(transport) {
-          if (transport.responseText.strip() == "SUCCESS") {
-            // Succeeded, remove advanced if needed
-            this.selectIdx = this.domNode.selectedIndex;
-            if (this.advOption) {
-              this.domNode.removeChild(this.advOption);
-              this.advOption = null;
-            }
-          } else {
-            //if an error occurred while trying to save a right rule, display an alert
-            // and refresh the page, since probably the user does not have the right to perform
-            // that action
-            alert("$services.localization.render('platform.core.rightsManagement.saveFailure')");
-            var rURL = unescape(window.location.pathname);
-            window.location.href = rURL;
+    this.req = new Ajax.Request(url, {
+      method: 'get',
+      onSuccess: function(transport) {
+        if (transport.responseText.strip() == "SUCCESS") {
+          // Succeeded, remove advanced if needed
+          this.selectIdx = this.domNode.selectedIndex;
+          if (this.advOption) {
+            this.domNode.removeChild(this.advOption);
+            this.advOption = null;
           }
-        }.bind(this),
-        onFailure: function() {
-          alert("$services.localization.render('platform.core.rightsManagement.ajaxFailure')");
-          this.domNode.value = this.domNode.options[this.selectIdx].value;
-        }.bind(this),
-        onComplete: function() {
-          delete this.req;
-          this.domNode.enable();
-        }.bind(this)
-      });
+        } else {
+          //if an error occurred while trying to save a right rule, display an alert
+          // and refresh the page, since probably the user does not have the right to perform
+          // that action
+          alert("$services.localization.render('platform.core.rightsManagement.saveFailure')");
+          var rURL = unescape(window.location.pathname);
+          window.location.href = rURL;
+        }
+      }.bind(this),
+      onFailure: function() {
+        alert("$services.localization.render('platform.core.rightsManagement.ajaxFailure')");
+        this.domNode.value = this.domNode.options[this.selectIdx].value;
+      }.bind(this),
+      onComplete: function() {
+        delete this.req;
+        this.domNode.enable();
+      }.bind(this)
+    });
   },
 
   attachEvents: function()
@@ -283,76 +283,78 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   var uorg = table.json.uorg;
   var allows = row.allows;
   var denys = row.denys;
+  var show = 1;
 
-  // targetDocument is an optional parameter, which set on which document we save the rights
-  if (targetDocument === undefined) {
-    // by default, we set it to the current document
-    targetDocument = XWiki.currentDocument;
-  }
-  
-  var saveUrl = targetDocument.getURL('get', 'sheet=XWiki.SaveRightsBasic&amp;outputSyntax=plain&amp;clsname=' + table.json.clsname + '&amp;fullname=' + encodeURIComponent(row.fullname) + '&amp;uorg=' + uorg);
-  if (form_token != undefined) {
-      saveUrl += "&amp;form_token=" + form_token;
-  }
-
-  var tr = document.createElement('tr');
-
-  var sel = document.createElement('select')
-  sel.size = 1;
-  sel.className = 'selectRights';
-  var username = document.createElement('td');
-  // Set a data-title attribute for the responsive livetable (since Flamingo).
-  if (uorg == 'groups') {
-    username.setAttribute('data-title', "$escapetool.javascript($services.localization.render('rightsmanager.groupname'))");
-  } else {
-    username.setAttribute('data-title', "$escapetool.javascript($services.localization.render('rightsmanager.username'))");
-  }
-  if (row.wikiname == "local") {
-    var a = document.createElement('a');
-    a.href = userurl;
-    a.appendChild( document.createTextNode( row.username ) );
-    username.appendChild( a );
-  } else {
-    username.appendChild(document.createTextNode(row.username));
-  }
-
-  var translatedRights = {
-    '' : '$escapetool.javascript($services.localization.render('rightuisimplifier.levels.label_noright'))'
-#foreach($i in [1..20])
-  #set($key = $services.localization.render("rightuisimplifier.levels.level_$i"))
-  #if ($key == "rightuisimplifier.levels.level_$i")
-    #break
-  #end
-    ,'$escapetool.javascript($key)' : '$escapetool.javascript($services.localization.render("rightuisimplifier.levels.label_$i"))'
-#end
-  };
-
-  var match = -1;
-  username.className = "username";
-  tr.appendChild(username);
-  Object.keys(translatedRights).each(function(right, index) {
-    var option = document.createElement('option');
-    option.className = "rights";
-    option.value = right.toLowerCase();
-    option.appendChild(document.createTextNode(translatedRights[right]));
-    sel.appendChild(option);
-    var sortedRight = right.split(',').sort().join(',');
-    var sortedAllows = allows.replace(/\[|\]/g,'').split(', ').sort().join(',');
-    if ((sortedAllows == sortedRight) &amp;&amp; denys.length == 2){
-      option.setAttribute('selected','selected')
-      match = index;
+  if(show &gt; 0){
+    // targetDocument is an optional parameter, which set on which document we save the rights
+    if (targetDocument === undefined) {
+      // by default, we set it to the current document
+      targetDocument = XWiki.currentDocument;
     }
-  });
 
-  var actions = document.createElement('td');
-  actions.appendChild(sel);
-  tr.appendChild(actions);
+    var saveUrl = targetDocument.getURL('get', 'sheet=XWiki.SaveRightsBasic&amp;outputSyntax=plain&amp;clsname=' + table.json.clsname + '&amp;fullname=' + encodeURIComponent(row.fullname) + '&amp;uorg=' + uorg);
+    if (form_token != undefined) {
+        saveUrl += "&amp;form_token=" + form_token;
+    }
 
-  new MSSelect(sel, match, saveUrl, table, i);
+    var tr = document.createElement('tr');
 
-  return tr;
-}
-</code>
+    var sel = document.createElement('select')
+    sel.size = 1;
+    sel.className = 'selectRights';
+    var username = document.createElement('td');
+    // Set a data-title attribute for the responsive livetable (since Flamingo).
+    if (uorg == 'groups' || uorg == 'groupsWithRights') {
+      username.setAttribute('data-title', "$escapetool.javascript($services.localization.render('rightsmanager.groupname'))");
+    } else {
+      username.setAttribute('data-title', "$escapetool.javascript($services.localization.render('rightsmanager.username'))");
+    }
+    if (row.wikiname == "local") {
+      var a = document.createElement('a');
+      a.href = userurl;
+      a.appendChild( document.createTextNode( row.username ) );
+      username.appendChild( a );
+    } else {
+      username.appendChild(document.createTextNode(row.username));
+    }
+
+    var translatedRights = {
+      '' : '$escapetool.javascript($services.localization.render('rightuisimplifier.levels.label_noright'))'
+  #foreach($i in [1..20])
+    #set($key = $services.localization.render("rightuisimplifier.levels.level_$i"))
+    #if ($key == "rightuisimplifier.levels.level_$i")
+      #break
+    #end
+      ,'$escapetool.javascript($key)' : '$escapetool.javascript($services.localization.render("rightuisimplifier.levels.label_$i"))'
+  #end
+    };
+
+    var match = -1;
+    username.className = "username";
+    tr.appendChild(username);
+    Object.keys(translatedRights).each(function(right, index) {
+      var option = document.createElement('option');
+      option.className = "rights";
+      option.value = right.toLowerCase();
+      option.appendChild(document.createTextNode(translatedRights[right]));
+      sel.appendChild(option);
+      var sortedRight = right.split(',').sort().join(',');
+      var sortedAllows = allows.replace(/\[|\]/g,'').split(', ').sort().join(',');
+      if ((sortedAllows == sortedRight) &amp;&amp; denys.length == 2){
+        option.setAttribute('selected','selected')
+        match = index;
+      }
+    });
+
+    var actions = document.createElement('td');
+    actions.appendChild(sel);
+    tr.appendChild(actions);
+
+    new MSSelect(sel, match, saveUrl, table, i);
+
+    return tr;
+  }
+}</code>
     </property>
     <property>
       <name/>
@@ -384,7 +386,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
         <values>long|short|default|forbid</values>
@@ -400,22 +402,6 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </code>
-      <contentType>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>select</displayType>
-        <multiSelect>0</multiSelect>
-        <name>contentType</name>
-        <number>6</number>
-        <prettyName>Content Type</prettyName>
-        <relationalStorage>0</relationalStorage>
-        <separator> </separator>
-        <separators>|, </separators>
-        <size>1</size>
-        <unmodifiable>0</unmodifiable>
-        <values>CSS|LESS</values>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </contentType>
       <name>
         <disabled>0</disabled>
         <name>name</name>
@@ -445,31 +431,31 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
-        <separators>|, </separators>
+        <separators> ,|</separators>
         <size>1</size>
         <unmodifiable>0</unmodifiable>
-        <values>currentPage|onDemand|always</values>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
     <name>XWiki.AdminRightsSheet</name>
     <number>0</number>
     <className>XWiki.StyleSheetExtension</className>
-    <guid>c084f098-fe17-4c0c-8d43-47ad5080ada8</guid>
+    <guid>8d0d74e5-7135-40d2-b14c-c7e4fd77f130</guid>
     <property>
       <cache>long</cache>
     </property>
     <property>
       <code>th.rights{
-  width: 9%;
+  width: 9% !important;
 }
 .rights {
-  text-align: left;
-  width:100%;
+  text-align: left !important;
+  width:100% !important;
+}
+.radioContainer {
+  display: inline-block !important;
 }</code>
-    </property>
-    <property>
-      <contentType>CSS</contentType>
     </property>
     <property>
       <name/>
@@ -479,6 +465,86 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
     </property>
     <property>
       <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <groups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>groups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Groups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </groups>
+      <levels>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>levels</name>
+        <number>2</number>
+        <prettyName>Levels</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>3</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
+      </levels>
+      <users>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>users</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>Users</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </users>
+    </class>
+    <name>XWiki.AdminRightsSheet</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>689a4a97-d55c-45f2-96f7-fcf524e9ab1e</guid>
+    <property>
+      <allow>1</allow>
+    </property>
+    <property>
+      <groups>XWiki.XWikiAllGroup</groups>
+    </property>
+    <property>
+      <levels>view,edit,comment</levels>
     </property>
   </object>
   <content>{{velocity}}
@@ -528,7 +594,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   #end
 
   ## url to take the users and groups to display in the ajax-based table
-  #set ($url = $doc.getURL('get', 'xpage=getusersandgroups'))
+  #set ($url = $doc.getURL('get', 'sheet=XWiki.RightsBasicLiveTableResults&amp;outputSyntax=plain'))
   #set ($saveUrl = $doc.getURL('get', "form_token=$!{services.csrf.getToken()}&amp;sheet=XWiki.SaveRightsBasic&amp;outputSyntax=plain&amp;clsname=${clsname}&amp;fullname=XWiki.XWikiGuest&amp;uorg=users"))
 
   ## get the rights for XWikiGuest
@@ -573,32 +639,58 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
                 ## Groups/Users switch
                 &lt;th scope="col" class="usersorgroupsnames"&gt;
                   #set ($isWorkspace = $services.workspace.isWorkspace($xcontext.database))
-                  &lt;label for="uorgg" class="hidden"&gt;$msg.get('rightsmanager.groups')&lt;/label&gt;
-              &lt;input type="radio" id="uorgg" name="uorg" value="groups"
-                onclick="if(!$('unregistered').hasClassName('hidden'))
-                           $('unregistered').addClassName('hidden');
-                       #if ($isWorkspace)
-                         ## Unhide scope selection and automatically select the old index.
-                         if($('usersandgroupstable-filters-scope').hasClassName('hidden')) {
-                           $('usersandgroupstable-filters-scope').removeClassName('hidden');
-                           $('wiki').options[groupScopeIndex].selected=true;
-                         }
-                       #end" checked="checked" /&gt;$services.localization.render('rightsmanager.groups')&amp;nbsp;&amp;nbsp;
-              &lt;label for="uorgu" class="hidden"&gt;$services.localization.render('rightsmanager.users')&lt;/label&gt;
-              &lt;input type="radio" id="uorgu" name="uorg" value="users" 
-                onclick="if($('unregistered').hasClassName('hidden'))
-                           $('unregistered').removeClassName('hidden');
-                       #if ($isWorkspace)
-                         ## Hide scope selection and automatically select global scope.
-                         if(!$('usersandgroupstable-filters-scope').hasClassName('hidden')) {
-                           $('usersandgroupstable-filters-scope').addClassName('hidden');
-                           groupScopeIndex = $('wiki').selectedIndex;
-                           $('wiki').options[1].selected=true;
-                         }
-                       #end" /&gt;$services.localization.render('rightsmanager.users')
+                  #set($query = "from doc.object(BasicRightFilters.BasicRightFiltersClass) as radio where doc.fullName &lt;&gt; 'BasicRightFilters.BasicRightFiltersTemplate' order by doc.fullName desc")
+                  #set($radioResults = $services.query.xwql($query).execute())
+                  #foreach($rad in $radioResults)
+                    #set($rDocument = $xwiki.getDocument($rad))
+                    #set($obj = $rDocument.getObject("BasicRightFilters.BasicRightFiltersClass"))
+                    #set($active = $obj.getProperty("active").value)
+                    #if($active == 1)
+                      &lt;div class='radioContainer'&gt;
+                        &lt;label for="uorgg" class="hidden"&gt;$msg.get('rightsmanager.groups')&lt;/label&gt;
+                        &lt;input type="radio" id="uorgg$!{velocityCount}" name="uorg" value="${rDocument.name.substring(0,1).toLowerCase()}${rDocument.name.substring(1)}"
+                        onclick="if(!$('unregistered').hasClassName('hidden'))
+                        $('unregistered').addClassName('hidden');
+                        #if ($isWorkspace)
+                          ## Unhide scope selection and automatically select the old index.
+                          if($('usersandgroupstable-filters-scope').hasClassName('hidden')) {
+                            $('usersandgroupstable-filters-scope').removeClassName('hidden');
+                            $('wiki').options[groupScopeIndex].selected=true;
+                          }
+                        #end"/&gt;&lt;span&gt;$rDocument.getDisplayTitle()&amp;nbsp;&amp;nbsp;&lt;/span&gt;
+                      &lt;/div&gt;
+                    #end
+                  #end
+                  &lt;div class='radioContainer'&gt;
+                    &lt;label for="uorgg" class="hidden"&gt;$msg.get('rightsmanager.groups')&lt;/label&gt;
+                    &lt;input type="radio" id="uorgg" name="uorg" value="groups"
+                    onclick="if(!$('unregistered').hasClassName('hidden'))
+                             $('unregistered').addClassName('hidden');
+                         #if ($isWorkspace)
+                           ## Unhide scope selection and automatically select the old index.
+                           if($('usersandgroupstable-filters-scope').hasClassName('hidden')) {
+                             $('usersandgroupstable-filters-scope').removeClassName('hidden');
+                             $('wiki').options[groupScopeIndex].selected=true;
+                           }
+                         #end" checked="checked"  /&gt;&lt;span&gt;$services.localization.render('rightuisimplifier.filter.allGroups')&amp;nbsp;&amp;nbsp;&lt;/span&gt;
+                  &lt;/div&gt;
+                  &lt;div class='radioContainer'&gt;
+                    &lt;label for="uorgu" class="hidden"&gt;$services.localization.render('rightsmanager.users')&lt;/label&gt;
+                    &lt;input type="radio" id="uorgu" name="uorg" value="users" 
+                    onclick="if($('unregistered').hasClassName('hidden'))
+                             $('unregistered').removeClassName('hidden');
+                         #if ($isWorkspace)
+                           ## Hide scope selection and automatically select global scope.
+                           if(!$('usersandgroupstable-filters-scope').hasClassName('hidden')) {
+                             $('usersandgroupstable-filters-scope').addClassName('hidden');
+                             groupScopeIndex = $('wiki').selectedIndex;
+                             $('wiki').options[1].selected=true;
+                           }
+                         #end" /&gt;&lt;span&gt;$services.localization.render('rightsmanager.users')&lt;/span&gt;
+                  &lt;/div&gt;
                   &lt;/th&gt;
                 ## Column headers for each configurable access right
-                  &lt;th scope="col" class="rights"&gt;$services.localization.render('rightsmanager.rightsTab')&lt;/th&gt;
+                  &lt;th scope="col" class="rights"&gt;$services.localization.render('rightsmanager.rightsCol')&lt;/th&gt;
               &lt;/tr&gt;
               &lt;tr hidden id="unregistered"&gt;
                 ## Rights for guests, statically displayed outside the livetable
@@ -633,8 +725,8 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
       &lt;/tr&gt;
     &lt;/table&gt;
 
-      &lt;script type="text/javascript"&gt;
-      //&lt;![CDATA[
+  &lt;script type="text/javascript"&gt;
+  //&lt;![CDATA[
   (function() {
     function hideScopeForUsers() {
       if ($('uorgu').checked) {
@@ -687,8 +779,8 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
     // Initialize liveTable
     (XWiki &amp;&amp; XWiki.isInitialized &amp;&amp; startup()) || document.observe('xwiki:livetable:loading', startup);
   })();
-      //]]&gt;
-      &lt;/script&gt;
+  //]]&gt;
+  &lt;/script&gt;
   &lt;/div&gt; ## xwikieditcontent
 &lt;/div&gt;
 #else
@@ -698,7 +790,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   &lt;/div&gt;
 #end
 &lt;script type="text/javascript"&gt;
-        //&lt;![CDATA[
+    //&lt;![CDATA[
     (function() {
         function startup() {
           $("buttontoggle").observe('click', function() {
@@ -721,8 +813,8 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
         }
         (XWiki &amp;&amp; XWiki.isInitialized &amp;&amp; startup()) || document.observe('xwiki:livetable:loading', startup);
     })();
-        //]]&gt;
-        &lt;/script&gt;
+    //]]&gt;
+    &lt;/script&gt;
 {{/html}}
 
 {{/velocity}}</content>

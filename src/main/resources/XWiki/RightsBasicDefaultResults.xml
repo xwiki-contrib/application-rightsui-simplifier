@@ -21,10 +21,10 @@
 
 <xwikidoc>
   <web>XWiki</web>
-  <name>AdminRightsTranslations</name>
-  <language>fr</language>
+  <name>RightsBasicDefaultResults</name>
+  <language/>
   <defaultLanguage/>
-  <translation>1</translation>
+  <translation>0</translation>
   <parent>XWiki.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
@@ -40,29 +40,28 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
-  <content>rightsmanager.rightsCol=Right to
+  <hidden>false</hidden>
+  <content>{{velocity output="false"}}
+#macro(getRows $uorg $clsname $filterMap $withRights $offset $limit $results $matchedCount)
+  #set($rows = [])
+  #set($results = $util.null)
+  #setVariable("$results" $rows)
 
-rightuisimplifier.goto.basic=Go to basic view
-rightuisimplifier.goto.advanced=Go to advanced view
+  #getUsersOrGroup($uorg $filterMap 0 0 $users $count)
+  #set($offlim = $offset + $limit)
+  #set($count = 0)
+  #foreach($user in $users)
+    #getRights($user $clsname $uorg $rights)
+    #if ($rights.allows.size() &gt; 0 || $rights.denys.size() &gt; 0)
+      #if ($count &gt;= $offset &amp;&amp; $count &lt; $offlim)
+        #set ($discard = $rows.add($rights))
+      #end
+      #set ($count = $count + 1)
+    #end
+  #end
 
-# Label when there is no right or custom right assigned to the user
-rightuisimplifier.levels.label_noright=No right
-rightuisimplifier.levels.label_adv=Custom rights (see advanced view)
-
-# These are the label for the selections in the listbox
-rightuisimplifier.levels.label_1=View
-rightuisimplifier.levels.label_2=View and comment
-rightuisimplifier.levels.label_3=View, comment and edit
-rightuisimplifier.levels.label_4=View, comment, edit and delete
-rightuisimplifier.levels.level_adv=Advanced
-
-# These are not translations but actual rights being set, matching the above labels
-rightuisimplifier.levels.level_1=view
-rightuisimplifier.levels.level_2=view,comment
-rightuisimplifier.levels.level_3=view,edit,comment
-rightuisimplifier.levels.level_4=view,edit,comment,delete
-
-rightuisimplifier.filter.groupsWithRights=Groupes ayant des droits
-rightuisimplifier.filter.allGroups=Tous les groupes</content>
+  #set($matchedCount = $util.null)
+  #setVariable("$matchedCount" $count)
+#end
+{{/velocity}}</content>
 </xwikidoc>

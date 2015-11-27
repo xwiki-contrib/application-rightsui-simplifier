@@ -21,11 +21,11 @@
 
 <xwikidoc>
   <web>XWiki</web>
-  <name>AdminRightsTranslations</name>
-  <language>fr</language>
+  <name>RightsBasicLiveTableResults</name>
+  <language/>
   <defaultLanguage/>
-  <translation>1</translation>
-  <parent>XWiki.WebHome</parent>
+  <translation>0</translation>
+  <parent>XWiki.AdminRightsSheet</parent>
   <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
@@ -34,35 +34,34 @@
   <date>1448629412000</date>
   <contentUpdateDate>1448629412000</contentUpdateDate>
   <version>1.1</version>
-  <title/>
+  <title>RightsBasicLiveTableResults</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
-  <content>rightsmanager.rightsCol=Right to
+  <hidden>false</hidden>
+  <content>{{include reference="XWiki.RightsBasicLiveTableResultsMacros" /}}
 
-rightuisimplifier.goto.basic=Go to basic view
-rightuisimplifier.goto.advanced=Go to advanced view
+{{velocity}}
+  #macro(getRows $uorg $clsname $filterMap $offset $limit $results $matchedCount)
+    #getDefaultRows($uorg $clsname $filterMap $offset $limit $results $matchedCount)
+  #end
+  #set ($resultPage = "BasicRightFilters.${request.uorg.substring(0,1).toUpperCase()}${request.uorg.substring(1)}")
+  #set ($resultPageDoc = $xwiki.getDocument($resultPage))
+  #if ( !$resultPageDoc.isNew() )
+  {{include reference="$resultPageDoc" /}}
+#end
+{{/velocity}}
 
-# Label when there is no right or custom right assigned to the user
-rightuisimplifier.levels.label_noright=No right
-rightuisimplifier.levels.label_adv=Custom rights (see advanced view)
-
-# These are the label for the selections in the listbox
-rightuisimplifier.levels.label_1=View
-rightuisimplifier.levels.label_2=View and comment
-rightuisimplifier.levels.label_3=View, comment and edit
-rightuisimplifier.levels.label_4=View, comment, edit and delete
-rightuisimplifier.levels.level_adv=Advanced
-
-# These are not translations but actual rights being set, matching the above labels
-rightuisimplifier.levels.level_1=view
-rightuisimplifier.levels.level_2=view,comment
-rightuisimplifier.levels.level_3=view,edit,comment
-rightuisimplifier.levels.level_4=view,edit,comment,delete
-
-rightuisimplifier.filter.groupsWithRights=Groupes ayant des droits
-rightuisimplifier.filter.allGroups=Tous les groupes</content>
+{{velocity}}
+  ###
+  ### Template used by the AJAX table that displays users and groups. It returns a sublist of users
+  ### and/or groups, filtered according to some parameters, in the JSON format.
+  ###
+  ###
+  #parseParams($uorg $clsname $filterMap $offset $limit)
+  #getRows($uorg $clsname $filterMap $offset $limit $results $matchedCount)
+  #displayJson($uorg $clsname $offset $limit $results $matchedCount)
+{{/velocity}}</content>
 </xwikidoc>

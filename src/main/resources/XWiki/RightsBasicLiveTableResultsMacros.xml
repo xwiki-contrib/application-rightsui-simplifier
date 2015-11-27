@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<xwikidoc>
+  <web>XWiki</web>
+  <name>RightsBasicLiveTableResultsMacros</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>XWiki.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1448628007000</creationDate>
+  <date>1448629412000</date>
+  <contentUpdateDate>1448629412000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity output='false'}}
+#####
+## Display a single JSON row
+#macro(displayRow $row $uorg)
+  #set($wikiname = $user.getWiki())
+  {"username"   : "$!{escapetool.javascript($row.user.name)}",
+  "fullname"   : #if($wikiname=="xwiki") "$!{escapetool.javascript($row.user.getPrefixedFullName())}" #else "$!{escapetool.javascript($row.user.fullName)}" #end,
+  "wikiname"   : "$!{escapetool.javascript($wikiname)}",
+  "userurl"    : "$xwiki.getURL($row.user.fullName)",
+  "allows"     : "$row.allows",
+  "denys"      : "$row.denys",
+  "isuseringroup" : #if($uorg == "groups") $xwiki.getUser().isUserInGroup($row.user.fullName) #else false #end
+  }
+#end
+
+#####
+## Display the livetable JSON
+#macro(displayJson $uorg $clsname $offset $limit $results $matchedCount)
+  $response.setContentType("application/json")
+  ## offset starts from 0 in velocity and 1 in javascript
+  #set($off = $offset + 1)
+  ### json starts
+  {
+  "totalrows": $matchedCount,
+  "reqNo"    : $mathtool.toInteger($request.reqNo),
+  "returnedrows": #if($matchedCount &lt; $limit) $matchedCount #else $limit #end,
+  "offset"   : $off,
+  "clsname"  : "$!{escapetool.javascript($clsname)}",
+  "uorg"     : "$!{escapetool.javascript($uorg)}",
+  "rows": [
+  #foreach($row in $results)
+    #if($velocityCount &gt; 1) , #end
+    #displayRow($row $uorg)
+  #end ## foreach user in users
+  ]}
+  ### end of json
+#end
+
+#####
+## Get filtered list of users or groups from the user API
+#macro(getUsersOrGroup $uorg $filterMap $offset $limit $users $matchedCount)
+  #set($rm = $xwiki.rightsmanager)
+  #set($matchedCount = $util.null)
+  #set($users = $util.null)
+  ##
+  ## Get the list of users/groups
+  #set($wiki = $request.wiki)
+  #if($wiki == "local")
+    #if($uorg == "users")
+      ## Get local users
+      #setVariable("$users" $rm.usersApi.getAllMatchedLocalUsers($filterMap, $limit, $offset, ['name']))
+      #setVariable("$matchedCount" $rm.usersApi.countAllMatchedLocalUsers($filterMap))
+    #else
+      ## Get local groups
+      #setVariable("$users" $rm.groupsApi.getAllMatchedLocalGroups($filterMap, $limit, $offset, ['name']))
+      #setVariable("$matchedCount" $rm.groupsApi.countAllMatchedLocalGroups($filterMap))
+    #end
+  #elseif($wiki == "global")
+    #if($uorg == "users")
+      ## Get global users
+      #setVariable("$users" $rm.usersApi.getAllMatchedGlobalUsers($filterMap, $limit, $offset, ['name']))
+      #setVariable("$matchedCount" $rm.usersApi.countAllMatchedGlobalUsers($filterMap))
+    #else
+      ## Get global group
+      #setVariable("$users" $rm.groupsApi.getAllMatchedGlobalGroups($filterMap, $limit, $offset, ['name']))
+      #setVariable("$matchedCount" $rm.groupsApi.countAllMatchedGlobalGroups($filterMap))
+    #end
+  #else
+    #if($uorg == "users")
+      ## Get both local and global users
+      #setVariable("$users" $rm.usersApi.getAllMatchedUsers($filterMap, $limit, $offset, ['name']))
+      #setVariable("$matchedCount" $rm.usersApi.countAllMatchedUsers($filterMap))
+    #else
+      ## Get both local and global groups
+      #setVariable("$users" $rm.groupsApi.getAllMatchedGroups($filterMap, $limit, $offset, ['name']))
+      #setVariable("$matchedCount" $rm.groupsApi.countAllMatchedGroups($filterMap))
+    #end
+  #end
+#end
+
+#####
+## Get rights for a user/group on the current entity using given right object
+#macro(getRights $user $clsname $uorg $rights)
+  #set($wikiname = $user.getWiki())
+  #if($wikiname != "xwiki" || $wikiname == $xcontext.database) #set($wikiname = "local") #end
+  #if($wikiname == "xwiki")
+    #set($username = $user.getPrefixedFullName())
+    #set($usermatch = ${regextool.quote($username)})
+  #else
+    #set($username = $user.fullName)
+    ## in subwikis users may be referenced by wiki:Space.Username or Space.Username
+    ## try to match both with one regexp. See XWIKI-9730
+    #set($usermatch = "("+${regextool.quote($user.getWiki())}+":)?"+${regextool.quote($username)} )
+  #end
+  #set($allows = {})
+  #set($denys = {})
+  ## Get the rights for that user or group
+  #foreach($obj in $doc.getObjects($clsname)) ## $clsname = XWiki.XWikiGlobalRights or XWiki.XWikiRights
+    #set($pers = "$!obj.getProperty($uorg).getValue()")
+    #if(($pers != "") &amp;&amp; (($pers.matches("^(.*,)?${usermatch}(,.*)?$")) ) )  
+      #foreach($right in $!obj.getProperty('levels').getValue().split(","))
+        #set($right = $right.trim())
+        #if($right != "")
+          #if($obj.getProperty('allow').getValue() == 1)
+            ## If the same right is specified both as allow and deny, deny is stronger.
+            #if(!$denys.containsKey($right)) #set($discard = $allows.put($right, "1")) #end
+          #else
+            #set($discard = $denys.put($right, "1"))
+            ## If the same right is specified both as allow and deny, deny is stronger.
+            #set($discard = "$!allows.remove($right)")
+          #end
+        #end
+      #end
+    #end
+  #end ## foreach rights object
+  #set ($map = {})
+  #set ($discard = $map.put('user', $user))
+  #set ($discard = $map.put('allows', $allows.keySet()))
+  #set ($discard = $map.put('denys', $denys.keySet()))
+  #set ($rights = $util.null)
+  #setVariable("$rights" $map)
+#end
+
+#macro(getDefaultRows $uorg $clsname $filterMap $offset $limit $results $matchedCount)
+  #set($rows = [])
+  #set($results = $util.null)
+  #setVariable("$results" $rows)
+  #if ($withRights == "1")
+    #getUsersOrGroup($uorg $filterMap 0 0 $users $count)
+    #set($offlim = $offset + $limit)
+    #set($count = 0)
+    #foreach($user in $users)
+      #getRights($user $clsname $uorg $rights)
+      #if ($rights.allows.size() &gt; 0 || $rights.denys.size() &gt; 0)
+        #if ($count &gt;= $offset &amp;&amp; $count &lt; $offlim)
+          #set ($discard = $rows.add($rights))
+        #end
+        #set ($count = $count + 1)
+      #end
+    #end
+  #else
+    #getUsersOrGroup($uorg $filterMap $offset $limit $users $count)
+    #foreach($user in $users)
+      #getRights($user $clsname $uorg $rights)
+      #set ($discard = $rows.add($rights))
+    #end
+  #end
+
+  #set($matchedCount = $util.null)
+  #setVariable("$matchedCount" $count)
+#end
+
+#macro (parseParams $uorg $clsname $map $offset $limit)
+  #set($off = $mathtool.toInteger($request.get('offset')))
+  ## offset starts from 0 in velocity and 1 in javascript
+  #set($off = $off - 1)
+  #set($offset = $util.null)
+  #setVariable("$offset" $off)
+  #set($limit = $util.null)
+  #setVariable("$limit" $mathtool.toInteger($request.get('limit')))
+
+  ## Get all the request parameters which are filters
+  #set($params = $request.getParameterMap())
+  #set($keys = $params.keySet())
+  ## Params which are not supposed to be used for filtering
+  #set($defaultKeys = ["xpage", "sheet", "outputSyntax", "offset", "limit", "wiki", "uorg", "clsname", "space", "reqNo", "sort", "dir"])
+  ## Params that should filter the document, not object properties
+  #set($docProps = ["fullName", "name"])
+  ## The filter being constructed. It will be passed to the rightsmanager API.
+  #set($filterMap = {})
+  #set($map = $util.null)
+  #setVariable("$map" $filterMap)
+  ##
+  #foreach($key in $keys)
+    ## foreach needed because request.getParameterMap returns a list of values for each parameter
+    #foreach($i in $params.get($key)) #set($value = $i)  #end
+    #if(!$defaultKeys.contains($key))
+      ## Put in the filters map
+      #if($docProps.contains($key))
+        ## Each filter is: key=&gt;[propType, value], where propType is null for document properties
+        #set($arr = [])
+        #set($discard = $arr.add($NULL))## null =&gt; document property
+        #set($discard = $arr.add("$value"))
+        #set($discard = $filterMap.put("$key", $arr))
+      #else
+        #set($arr = [])
+        ## This may be variable... For the moment, assume it is a StringProperty
+        #set($discard = $arr.add("StringProperty"))
+        #set($discard = $arr.add("$value"))
+        #set($discard = $filterMap.put("$key", $arr))
+      #end
+    #elseif($key == "uorg")
+      #set($uorg = $util.null)
+      #setVariable("$uorg" $value)
+    #elseif($key == "clsname")
+      #set($clsname = $util.null)
+      #setVariable("$clsname" $value)
+    #end
+  #end
+  #set($withRights = $util.null)
+  #if($uorg.startsWith("groups"))
+    #set($uorg = "groups")
+  #elseif($uorg.startsWith("users"))
+    #set($uorg = "users")
+  #end
+#end
+{{/velocity}}</content>
+</xwikidoc>
