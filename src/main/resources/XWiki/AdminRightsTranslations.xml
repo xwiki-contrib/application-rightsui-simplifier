@@ -101,5 +101,7 @@ rightuisimplifier.levels.level_adv=Advanced
 
 rightuisimplifier.filter.groupsIBelongTo=Groups I belong to
 rightuisimplifier.filter.groupsWithRights=Groups with rights
-rightuisimplifier.filter.allGroups=All groups</content>
+rightuisimplifier.filter.allGroups=All groups
+
+rightuisimplifier.filter.applicationname=Filters for the Right UI Simplifier</content>
 </xwikidoc>

@@ -42,8 +42,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>BasicRightFilters.applicationname=Filtres de l'interface des droits simplifiée
-
+  <content>
 # Class fields
 BasicRightFilters.BasicRightFiltersClass_active=Actif
 BasicRightFilters.BasicRightFiltersClass_Label=Libellé

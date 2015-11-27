@@ -34,7 +34,7 @@
   <date>1448642361000</date>
   <contentUpdateDate>1448641555000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('BasicRightFilters.applicationname')</title>
+  <title>$services.localization.render('rightuisimplifier.filter.applicationname')</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -186,7 +186,7 @@
       <name>platform.panels.BasicRightFiltersApplication</name>
     </property>
     <property>
-      <parameters>label=$services.localization.render('BasicRightFilters.applicationname')
+      <parameters>label=$services.localization.render('rightuisimplifier.filter.applicationname')
 target=BasicRightFilters.WebHome
 icon=icon:application</parameters>
     </property>

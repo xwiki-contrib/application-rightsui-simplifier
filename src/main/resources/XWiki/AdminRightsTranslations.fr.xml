@@ -60,5 +60,6 @@ rightuisimplifier.levels.label_4=Voir, commenter, modifier et supprimerrightsman
 rightuisimplifier.filter.groupsIBelongTo=Groupes auxquels j''appartiens
 rightuisimplifier.filter.groupsWithRights=Groupes ayant des droits
 rightuisimplifier.filter.allGroups=Tous les groupes
-</content>
+
+rightuisimplifier.filter.applicationname=Filtres de l''interface des droits simplifiée</content>
 </xwikidoc>
