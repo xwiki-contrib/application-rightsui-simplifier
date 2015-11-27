@@ -90,14 +90,15 @@ rightuisimplifier.levels.label_1=View
 rightuisimplifier.levels.label_2=View and comment
 rightuisimplifier.levels.label_3=View, comment and edit
 rightuisimplifier.levels.label_4=View, comment, edit and delete
-rightuisimplifier.levels.level_adv=Advanced
 
 # These are not translations but actual rights being set, matching the above labels
 rightuisimplifier.levels.level_1=view
 rightuisimplifier.levels.level_2=view,comment
 rightuisimplifier.levels.level_3=view,edit,comment
 rightuisimplifier.levels.level_4=view,edit,comment,delete
+rightuisimplifier.levels.level_adv=Advanced
 
+rightuisimplifier.filter.groupsIBelongTo=Groups I belong to
 rightuisimplifier.filter.groupsWithRights=Groups with rights
 rightuisimplifier.filter.allGroups=All groups</content>
 </xwikidoc>
