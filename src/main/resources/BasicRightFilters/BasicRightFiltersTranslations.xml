@@ -77,13 +77,13 @@
     </property>
   </object>
   <content># Class fields
-BasicRightFilters.BasicRightFiltersClass_active=ACTIVE
+BasicRightFilters.BasicRightFiltersClass_active=Active
 BasicRightFilters.BasicRightFiltersClass_Label=Label
 BasicRightFilters.BasicRightFiltersClass_Code=Code
 
 # Live table generic keys
-basicrightfilters.livetable.doc.title=Page title
-basicrightfilters.livetable.doc.name=Page name
+basicrightfilters.livetable.doc.title=Label
+basicrightfilters.livetable.doc.name=Identifier
 basicrightfilters.livetable.doc.space=Space
 basicrightfilters.livetable.doc.fullname=Page full name
 basicrightfilters.livetable.doc.author=Last Author
@@ -99,7 +99,7 @@ basicrightfilters.livetable._actions.delete=Delete
 basicrightfilters.livetable.emptyvalue=-
 
 # Live table specific keys
-basicrightfilters.livetable.active=ACTIVE
+basicrightfilters.livetable.active=Active
 basicrightfilters.livetable.Label=Label
 basicrightfilters.livetable.Code=Code</content>
 </xwikidoc>
