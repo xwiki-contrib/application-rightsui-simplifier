@@ -574,14 +574,22 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   <content>{{velocity}}
 #set($discard = $xwiki.jsx.use("XWiki.AdminRightsSheet"))
 #set($xwikiVersion = $xwiki.version.substring(0,3))
-#if($mathtool.toNumber($xwikiVersion) &gt; 7.2)
-  #if ($editor == 'spaceadmin')
+#if($section != "" &amp;&amp; $mathtool.toNumber($xwikiVersion) &gt; 7.2)
+  #if($section == 'PageRights')
+    {{info}}
+    $services.localization.render('admin.pagerights.info') **$services.localization.render('admin.pagerights.infoNonTerminalDoc', ['[[', "&gt;&gt;path:$xwiki.getURL($webHomeRef, 'view', 'xpage=children')]]"])**
+    {{/info}}
+  #elseif($editor == 'spaceadmin')
     {{info}}
     #set($webHomeRef = $services.model.resolveDocument('WebHome'))
+    #set($warnMsg = 'admin.pageandchildrenrights.info')
+    #if($services.localization.render($warnMsg) == $warnMsg)
+      #set($warnMsg = 'admin.rights.info')
+    #end
     ## For the children link, we do not use 'viewer=children' because the WebHome might not exist and the viewer shows a 
     ## 404 error in that case. Instead, we use 'xpage=children' because it always works, and because children document
     ## could exist even if the parent document does not.
-    $services.localization.render('admin.rights.info', ['**', '[[', "&gt;&gt;path:$xwiki.getURL($webHomeRef, 'view', 'xpage=children')]]", '**'])
+    $services.localization.render($warnMsg, ['**', '[[', "&gt;&gt;path:$xwiki.getURL($webHomeRef, 'view', 'xpage=children')]]", '**'])
     {{/info}}
   #end
 #end
