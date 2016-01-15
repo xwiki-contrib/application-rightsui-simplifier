@@ -187,6 +187,12 @@ MSSelect = Class.create({
     this.attachEvents();
   },
 
+  resetValue: function()
+  {
+    this.domNode.value = this.domNode.options[this.selectIdx].value;
+    this.domNode.enable();
+  },
+
   /* Confirmation cases:
    * 1. The current user is clearing / denying himself any right.
    * 2. The current user is clearing / denying any rights for a group he belongs to.
@@ -211,6 +217,7 @@ MSSelect = Class.create({
       if (this.currentUorG == window.currentUser) {
         var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforcurrentuser'))".replace(/__right__/g, right);
         if (!confirm(clearmessage)) {
+          this.resetValue();
           return;
         }
       } else {
@@ -218,6 +225,7 @@ MSSelect = Class.create({
         var clearmessage = "$escapetool.javascript($services.localization.render('rightsmanager.clearrightforgroup'))".replace(/__right__/g, right);
         clearmessage = clearmessage.replace('__name__', this.currentUorG);
         if (!confirm(clearmessage)) {
+          this.resetValue();
           return;
         }
       }
@@ -256,7 +264,7 @@ MSSelect = Class.create({
       }.bind(this),
       onFailure: function() {
         alert("$services.localization.render('platform.core.rightsManagement.ajaxFailure')");
-        this.domNode.value = this.domNode.options[this.selectIdx].value;
+        this.resetValue();
       }.bind(this),
       onComplete: function() {
         delete this.req;
