@@ -122,11 +122,15 @@
       <cache>long</cache>
     </property>
     <property>
-      <code>(function(rightMenuItem) {
-  if(rightMenuItem){
-    rightMenuItem.setAttribute('href', rightMenuItem.href.replace('editor=rights', 'sheet=XWiki.AdminRightsSheet'));
+      <code>(function() {
+  function startup() {
+    var rightMenuItem = $('tmEditRights');
+    if (rightMenuItem) {
+      rightMenuItem.setAttribute('href', rightMenuItem.href.replace('editor=rights', 'sheet=XWiki.AdminRightsSheet'));
+    }
   }
-})($('tmEditRights'))</code>
+  (XWiki &amp;&amp; XWiki.isInitialized &amp;&amp; startup()) || document.observe('xwiki:dom:loaded', startup);
+})();</code>
     </property>
     <property>
       <name/>

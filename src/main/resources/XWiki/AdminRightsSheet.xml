@@ -600,6 +600,9 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
     {{/info}}
   #end
 #end
+#if("$!editor" == "inline")
+  #set($showactions = 0)
+#end
 
 {{html}}
 #if ($request.mode != "advanced")
@@ -852,6 +855,10 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
                 window.location.replace(rURL);
             }
           });
+          #if("$!editor" == "inline")
+          var title = $('document-title').down('h1');
+          title.update('$msg.get("core.editors.rights.title", [$escapetool.xml($doc.plainTitle), $doc.getURL()])');
+          #end
         }
         (XWiki &amp;&amp; XWiki.isInitialized &amp;&amp; startup()) || document.observe('xwiki:livetable:loading', startup);
     })();
