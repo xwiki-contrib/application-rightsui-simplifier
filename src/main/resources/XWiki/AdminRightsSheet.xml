@@ -162,10 +162,12 @@ MSSelect = Class.create({
       this.initialEdit = initialAllows.indexOf('edit') &gt;= 0;
       this.initialAdmin = initialAllows.indexOf('admin') &gt;= 0;
       this.currentUorG = this.table.fetchedRows[this.idx].fullname;
+      this.currentName = this.table.fetchedRows[this.idx].username;
       this.isUserInGroup = this.table.fetchedRows[this.idx].isuseringroup;
     } else {
       // guest users
       this.currentUorG = window.unregUser;
+      this.currentName = "$msg.get('rightsmanager.unregisteredusers')"
       this.isUserInGroup = false;
       this.initialEdit = false;
       this.initialAdmin = false;
@@ -245,6 +247,9 @@ MSSelect = Class.create({
 
     this.req = new Ajax.Request(url, {
       method: 'get',
+      onCreate : function() {
+        this.notification = new XWiki.widgets.Notification("$services.localization.render('rightuisimplifier.save.inprogress')".replace('__name__', this.currentName), "inprogress");
+      }.bind(this),
       onSuccess: function(transport) {
         if (transport.responseText.strip() == "SUCCESS") {
           // Succeeded, remove advanced if needed
@@ -253,6 +258,7 @@ MSSelect = Class.create({
             this.domNode.removeChild(this.advOption);
             this.advOption = null;
           }
+          this.notification.replace(new XWiki.widgets.Notification("$services.localization.render('rightuisimplifier.save.done')".replace('__name__', this.currentName), "done", {timeout:5}));
         } else {
           //if an error occurred while trying to save a right rule, display an alert
           // and refresh the page, since probably the user does not have the right to perform
@@ -265,6 +271,7 @@ MSSelect = Class.create({
       onFailure: function() {
         alert("$services.localization.render('platform.core.rightsManagement.ajaxFailure')");
         this.resetValue();
+        this.notification.replace(new XWiki.widgets.Notification("$services.localization.render('rightuisimplifier.save.failed')".replace('__name__', this.currentName) + failureReason, "error"));
       }.bind(this),
       onComplete: function() {
         delete this.req;

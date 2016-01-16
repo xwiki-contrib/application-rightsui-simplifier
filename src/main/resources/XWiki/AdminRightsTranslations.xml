@@ -82,6 +82,10 @@
 rightuisimplifier.goto.basic=Go to basic view
 rightuisimplifier.goto.advanced=Go to advanced view
 
+rightuisimplifier.save.inprogress=Saving rights for __name__
+rightuisimplifier.save.done=Rights for __name__ saved
+rightuisimplifier.save.failed=Failed to save rights for __name__
+
 # Label when there is no right or custom right assigned to the user
 rightuisimplifier.levels.label_noright=No right
 rightuisimplifier.levels.label_adv=Custom rights (see advanced view)

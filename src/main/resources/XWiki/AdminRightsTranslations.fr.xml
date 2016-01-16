@@ -47,6 +47,10 @@
 rightuisimplifier.goto.basic=Voir la vue simplifiée
 rightuisimplifier.goto.advanced=Voir la vue avancée
 
+rightuisimplifier.save.inprogress=Enregistrement des droits pour __name__
+rightuisimplifier.save.done=Droits pour __name__ enregistrés
+rightuisimplifier.save.failed=Echec de l'enregistrement des droits pour __name__
+
 # Label when there is no right or custom right assigned to the user
 rightuisimplifier.levels.label_noright=Aucun droit
 rightuisimplifier.levels.label_adv=Droits spécifiques (voir la vue avancée)
