@@ -178,7 +178,7 @@ MSSelect = Class.create({
 
     if(selected &lt; 0){
       this.advOption = document.createElement('option');
-      this.advOption.appendChild(document.createTextNode("$escapetool.javascript($services.localization.render('rightuisimplifier.levels.level_adv'))"));
+      this.advOption.appendChild(document.createTextNode("$escapetool.javascript($services.localization.render('rightuisimplifier.levels.label_adv'))"));
       this.advOption.setAttribute('selected','selected');
       this.domNode.appendChild(this.advOption);
       this.selectIdx = this.domNode.selectedIndex;
