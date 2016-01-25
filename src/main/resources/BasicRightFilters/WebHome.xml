@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<xwikidoc>
+<xwikidoc reference="BasicRightFilters.WebHome" locale="">
   <web>BasicRightFilters</web>
   <name>WebHome</name>
   <language/>
