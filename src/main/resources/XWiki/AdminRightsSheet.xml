@@ -683,6 +683,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
                   #set ($isWorkspace = $services.workspace.isWorkspace($xcontext.database))
                   #set($query = "from doc.object(BasicRightFilters.BasicRightFiltersClass) as radio where doc.fullName &lt;&gt; 'BasicRightFilters.BasicRightFiltersTemplate' order by doc.fullName desc")
                   #set($radioResults = $services.query.xwql($query).execute())
+                  #set($foundChecked = false)
                   #foreach($rad in $radioResults)
                     #set($rDocument = $xwiki.getDocument($rad))
                     #set($obj = $rDocument.getObject("BasicRightFilters.BasicRightFiltersClass"))
@@ -699,7 +700,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
                             $('usersandgroupstable-filters-scope').removeClassName('hidden');
                             $('wiki').options[groupScopeIndex].selected=true;
                           }
-                        #end"/&gt;&lt;span&gt;$rDocument.getDisplayTitle()&amp;nbsp;&amp;nbsp;&lt;/span&gt;
+                        #end"#if($velocityCount == 1)#set($foundChecked = true) checked="checked"#end/&gt;&lt;span&gt;$rDocument.getDisplayTitle()&amp;nbsp;&amp;nbsp;&lt;/span&gt;
                       &lt;/div&gt;
                     #end
                   #end
@@ -714,7 +715,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
                              $('usersandgroupstable-filters-scope').removeClassName('hidden');
                              $('wiki').options[groupScopeIndex].selected=true;
                            }
-                         #end" checked="checked"  /&gt;&lt;span&gt;$services.localization.render('rightuisimplifier.filter.allGroups')&amp;nbsp;&amp;nbsp;&lt;/span&gt;
+                         #end"#if(!$foundChecked) checked="checked"#end/&gt;&lt;span&gt;$services.localization.render('rightuisimplifier.filter.allGroups')&amp;nbsp;&amp;nbsp;&lt;/span&gt;
                   &lt;/div&gt;
                   &lt;div class='radioContainer'&gt;
                     &lt;label for="uorgu" class="hidden"&gt;$services.localization.render('rightsmanager.users')&lt;/label&gt;
@@ -728,7 +729,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
                              groupScopeIndex = $('wiki').selectedIndex;
                              $('wiki').options[1].selected=true;
                            }
-                         #end" /&gt;&lt;span&gt;$services.localization.render('rightsmanager.users')&lt;/span&gt;
+                         #end"/&gt;&lt;span&gt;$services.localization.render('rightsmanager.users')&lt;/span&gt;
                   &lt;/div&gt;
                   &lt;/th&gt;
                 ## Column headers for each configurable access right
