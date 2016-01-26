@@ -45,6 +45,7 @@
 
 rightuisimplifier.goto.basic=Voir la vue simplifiée
 rightuisimplifier.goto.advanced=Voir la vue avancée
+rightuisimplifier.goto.spaceright=Voir les droits de l'espace
 
 rightuisimplifier.save.inprogress=Enregistrement des droits pour __name__
 rightuisimplifier.save.done=Droits pour __name__ enregistrés

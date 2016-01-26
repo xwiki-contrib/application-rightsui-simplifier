@@ -581,7 +581,7 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
   <content>{{velocity}}
 #set($discard = $xwiki.jsx.use("XWiki.AdminRightsSheet"))
 #set($xwikiVersion = $xwiki.version.substring(0,3))
-#if($section != "" &amp;&amp; $mathtool.toNumber($xwikiVersion) &gt; 7.2)
+#if($section != "" &amp;&amp; $mathtool.toNumber($xwikiVersion) &gt; 7.1)
   #if($section == 'PageRights')
     {{info}}
     $services.localization.render('admin.pagerights.info') **$services.localization.render('admin.pagerights.infoNonTerminalDoc', ['[[', "&gt;&gt;path:$xwiki.getURL($webHomeRef, 'view', 'xpage=children')]]"])**
@@ -607,6 +607,9 @@ function displayUsersAndGroupsBasic(row, i, table, idx, form_token, targetDocume
 {{html}}
 #if ($request.mode != "advanced")
 &lt;a id='buttontoggle' style="float:right; cursor:pointer; color: #0089dc;"&gt;$services.localization.render('rightuisimplifier.goto.advanced')&lt;/a&gt;
+#if("$!section" == ""  &amp;&amp; $mathtool.toNumber($xwikiVersion) &lt; 7.2)
+&lt;span id='gotospace' style="float:right; margin-right: 10px;"&gt;&lt;a style="cursor:pointer; color: #0089dc;  margin-right: 10px;" href="$xwiki.getURL('WebPreferences','admin','editor=spaceadmin&amp;section=PageAndChildrenRights')"&gt;$services.localization.render('rightuisimplifier.goto.spaceright')&lt;/a&gt;|&lt;/span&gt;
+#end
 &lt;div id='simpleUI'&gt;
   #set ($formname = 'update')
   #set ($saveaction = 'save')

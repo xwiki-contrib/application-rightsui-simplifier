@@ -80,6 +80,7 @@
 
 rightuisimplifier.goto.basic=Go to basic view
 rightuisimplifier.goto.advanced=Go to advanced view
+rightuisimplifier.goto.spaceright=Go to space rights
 
 rightuisimplifier.save.inprogress=Saving rights for __name__
 rightuisimplifier.save.done=Rights for __name__ saved
